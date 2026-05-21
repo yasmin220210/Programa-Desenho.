@@ -1,0 +1,219 @@
+<canvas width="800" height="500"></canvas>
+<br><br>
+
+<button onclick="ativarDesenho('coracao')" id="botaoCoracao">
+    Fazer coração ❤️
+</button>
+
+<button onclick="ativarDesenho('estrela')" id="botaoEstrela">
+    Fazer estrela ⭐
+</button>
+
+<!-- botão limpar -->
+<button onclick="limparTela()" id="botaoLimpar">
+    Limpar 🧹
+</button>
+
+<style>
+    body {
+        text-align: center;
+        font-family: Arial;
+    }
+
+    canvas {
+        border: 2px solid black;
+    }
+
+    button {
+        border: none;
+        padding: 12px 20px;
+        font-size: 18px;
+        border-radius: 12px;
+        cursor: pointer;
+        margin: 10px;
+        color: white;
+        transition: 0.3s;
+    }
+
+    #botaoCoracao {
+        background-color: hotpink;
+    }
+
+    #botaoCoracao:hover {
+        background-color: deeppink;
+        transform: scale(1.05);
+    }
+
+    #botaoEstrela {
+        background-color: orange;
+    }
+
+    #botaoEstrela:hover {
+        background-color: gold;
+        transform: scale(1.05);
+    }
+
+    #botaoLimpar {
+        background-color: crimson;
+    }
+
+    #botaoLimpar:hover {
+        background-color: darkred;
+        transform: scale(1.05);
+    }
+</style>
+
+<script>
+
+let tela = document.querySelector('canvas');
+let pincel = tela.getContext('2d');
+
+// fundo
+function desenharFundo() {
+    pincel.fillStyle = 'lightgrey';
+    pincel.fillRect(0, 0, 800, 500);
+}
+
+desenharFundo();
+
+let podeDesenhar = false;
+let modo = "coracao";
+
+// cores possíveis
+let cores = ['magenta', 'red', 'blue', 'green', 'purple', 'orange'];
+let indiceCor = 0;
+
+// tamanho inicial
+let tamanho = 1;
+
+// ativar desenho
+function ativarDesenho(tipo) {
+
+    modo = tipo;
+
+    let resposta = prompt("Deseja desenhar um(a) " + tipo + "? (sim ou não)");
+
+    if(resposta == "sim") {
+
+        alert("Clique no canvas para desenhar!");
+        alert("Mouse direito muda COR e TAMANHO 🎨");
+
+        podeDesenhar = true;
+
+    } else {
+
+        alert("Tudo bem 😊");
+    }
+}
+
+// limpar tela
+function limparTela() {
+
+    pincel.clearRect(0, 0, 800, 500);
+
+    desenharFundo();
+
+    alert("Tela limpa 🧹");
+}
+
+// mudar cor e tamanho com mouse direito
+tela.oncontextmenu = function(evento) {
+
+    evento.preventDefault();
+
+    indiceCor++;
+
+    if(indiceCor >= cores.length) {
+        indiceCor = 0;
+    }
+
+    tamanho++;
+
+    if(tamanho > 3) {
+        tamanho = 1;
+    }
+
+    alert("Cor e tamanho alterados!");
+
+}
+
+// desenhar coração
+function desenhaCoracao(x, y, escala) {
+
+    pincel.fillStyle = cores[indiceCor];
+
+    pincel.beginPath();
+
+    pincel.moveTo(x, y);
+
+    pincel.bezierCurveTo(
+        x, y - 30 * escala,
+        x - 50 * escala, y - 30 * escala,
+        x - 50 * escala, y + 20 * escala
+    );
+
+    pincel.bezierCurveTo(
+        x - 50 * escala, y + 60 * escala,
+        x, y + 90 * escala,
+        x, y + 120 * escala
+    );
+
+    pincel.bezierCurveTo(
+        x, y + 90 * escala,
+        x + 50 * escala, y + 60 * escala,
+        x + 50 * escala, y + 20 * escala
+    );
+
+    pincel.bezierCurveTo(
+        x + 50 * escala, y - 30 * escala,
+        x, y - 30 * escala,
+        x, y
+    );
+
+    pincel.fill();
+}
+
+// desenhar estrela
+function desenhaEstrela(x, y, raio) {
+
+    pincel.fillStyle = cores[indiceCor];
+
+    pincel.beginPath();
+
+    for(let i = 0; i < 5; i++) {
+
+        pincel.lineTo(
+            x + raio * Math.cos((18 + i * 72) * Math.PI / 180),
+            y - raio * Math.sin((18 + i * 72) * Math.PI / 180)
+        );
+
+        pincel.lineTo(
+            x + (raio / 2) * Math.cos((54 + i * 72) * Math.PI / 180),
+            y - (raio / 2) * Math.sin((54 + i * 72) * Math.PI / 180)
+        );
+    }
+
+    pincel.closePath();
+    pincel.fill();
+}
+
+// clique do mouse
+tela.onclick = function(evento) {
+
+    if(podeDesenhar) {
+
+        let x = evento.pageX - tela.offsetLeft;
+        let y = evento.pageY - tela.offsetTop;
+
+        if(modo == "coracao") {
+
+            desenhaCoracao(x, y, tamanho);
+
+        } else if(modo == "estrela") {
+
+            desenhaEstrela(x, y, 30 * tamanho);
+        }
+    }
+}
+
+</script>
